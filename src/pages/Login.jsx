@@ -3,57 +3,67 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  // On utilise 'identifier' pour stocker soit l'email soit le username
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
+      // Appel à ton API Django (Assure-toi que ton serveur tourne sur le port 8000)
       const response = await axios.post("http://127.0.0.1:8000/api/token/", {
-        username: email,
+        username: identifier, // Le backend recevra soit l'email soit le pseudo ici
         password: password,
       });
+
+      // Stockage des tokens pour rester connecté
       localStorage.setItem("access_token", response.data.access);
+      localStorage.setItem("refresh_token", response.data.refresh);
+
+      // Redirection vers le tableau de bord
       navigate("/dashboard");
-     } catch (err) {
-    // Cela affichera l'erreur réelle dans la console (F12)
-    console.log("Erreur complète:", err.response?.data); 
-    alert("Détails : " + JSON.stringify(err.response?.data));
-}
+    } catch (err) {
+      // Correction du bug "undefined" : on vérifie si la réponse existe
+      const errorDetail = err.response?.data?.detail || "Identifiants incorrects ou serveur éteint";
+      console.error("Erreur de connexion:", errorDetail);
+      alert("Erreur : " + errorDetail);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    /* h-screen + overflow-hidden pour empêcher tout défilement */
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#313538] font-sans overflow-hidden relative">
-      
-      {/* Cercles de fond (Positionnés pour ne pas gêner la lecture) */}
+      {/* Cercles décoratifs en arrière-plan */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-5%] left-[-10%] w-[400px] h-[400px] rounded-full border-[40px] border-white/5"></div>
         <div className="absolute bottom-[-5%] right-[-10%] w-[500px] h-[500px] rounded-full border-[50px] border-white/5"></div>
       </div>
 
-      {/* 1. Header Logo (Marge réduite) */}
+      {/* Logo / Titre */}
       <div className="flex items-center gap-2 mb-6 z-10">
         <div className="w-5 h-5 bg-white flex items-center justify-center rounded-sm">
-           <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[9px] border-b-[#313538]"></div>
+          <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[9px] border-b-[#313538]"></div>
         </div>
         <span className="text-white font-bold text-lg tracking-widest uppercase">Red Product</span>
       </div>
 
-      {/* 2. Carte de connexion (Taille ajustée pour tenir sans scroll) */}
+      {/* Formulaire */}
       <div className="w-[90%] max-w-[380px] bg-white rounded-md shadow-2xl p-8 z-10">
         <p className="text-gray-700 text-sm mb-8">Connectez-vous en tant que Admin</p>
 
         <form onSubmit={handleLogin} className="flex flex-col">
-          {/* Inputs avec marges réduites */}
           <div className="mb-6 border-b border-gray-200">
             <input
-              type="email"
-              placeholder="E-mail"
+              type="text"
+              placeholder="E-mail ou Nom d'utilisateur"
               className="w-full py-2 focus:outline-none text-gray-800 placeholder-gray-400 text-sm"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
             />
           </div>
@@ -69,7 +79,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Checkbox */}
           <div className="flex items-center gap-2 mb-8">
             <input 
               type="checkbox" 
@@ -81,17 +90,19 @@ const Login = () => {
             </label>
           </div>
 
-          {/* Bouton */}
           <button
             type="submit"
-            className="w-full bg-[#4a4d50] text-white py-3 rounded-md font-medium text-sm hover:bg-[#3f4245] transition-all"
+            disabled={loading}
+            className={`w-full bg-[#4a4d50] text-white py-3 rounded-md font-medium text-sm transition-all ${
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3f4245]"
+            }`}
           >
-            Se connecter
+            {loading ? "Connexion..." : "Se connecter"}
           </button>
         </form>
       </div>
 
-      {/* 3. Pied de page (Liens rapprochés de la carte) */}
+      {/* Liens supplémentaires */}
       <div className="mt-6 text-center z-10">
         <Link to="/MotDePasseOublie" className="block text-[#FFD700] text-sm font-bold hover:underline mb-2">
           Mot de passe oublié ?
