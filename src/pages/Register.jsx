@@ -12,15 +12,17 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    try {
-      // Appel à l'API Django créée précédemment
-      await axios.post("http://127.0.0.1:8000/api/register/", formData);
-      alert("Inscription réussie ! Connectez-vous.");
-      navigate("/");
-    } catch (err) {
-      alert("Erreur lors de l'inscription. Vérifiez vos informations.");
-    }
-  };
+   try {
+  const response = await axios.post("http://127.0.0.1:8000/api/register/", formData);
+  alert("Inscription réussie !");
+  navigate("/");
+} catch (err) {
+  console.log("STATUS:", err.response?.status);
+  console.log("DATA:", err.response?.data);
+  alert(JSON.stringify(err.response?.data, null, 2)); // ✅ affiche les erreurs exactes du backend
+}
+};
+
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#313538] font-sans overflow-hidden relative">

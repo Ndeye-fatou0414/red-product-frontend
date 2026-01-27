@@ -15,10 +15,11 @@ const Login = () => {
 
     try {
       // Appel à ton API Django (Assure-toi que ton serveur tourne sur le port 8000)
-      const response = await axios.post("http://127.0.0.1:8000/api/token/", {
-        username: identifier, // Le backend recevra soit l'email soit le pseudo ici
-        password: password,
-      });
+     const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+  email: identifier, // ✅ envoie bien l'email
+  password: password,
+});
+
 
       // Stockage des tokens pour rester connecté
       localStorage.setItem("access_token", response.data.access);
@@ -27,10 +28,9 @@ const Login = () => {
       // Redirection vers le tableau de bord
       navigate("/dashboard");
     } catch (err) {
-      // Correction du bug "undefined" : on vérifie si la réponse existe
-      const errorDetail = err.response?.data?.detail || "Identifiants incorrects ou serveur éteint";
-      console.error("Erreur de connexion:", errorDetail);
-      alert("Erreur : " + errorDetail);
+      console.log("STATUS:", err.response?.status);
+      console.log("DATA:", err.response?.data);
+      alert(JSON.stringify(err.response?.data, null, 2));
     } finally {
       setLoading(false);
     }
