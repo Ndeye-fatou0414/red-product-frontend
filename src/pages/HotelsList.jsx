@@ -25,6 +25,7 @@ const HotelsList = () => {
       const response = await axios.get("https://mon-projet-django-b8xs.onrender.com/api/hotels/", {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log("🔍 Données des hôtels:", response.data); // ✅ Debug
       setHotels(response.data);
     } catch (err) {
       if (err.response?.status === 401) navigate('/login');
@@ -41,25 +42,26 @@ const HotelsList = () => {
     const formData = new FormData();
     formData.append('name', newHotel.name);
     formData.append('address', newHotel.address);
-    formData.append('price', parseFloat(newHotel.price).toFixed(2)); // ✅ format décimal
+    formData.append('price', parseFloat(newHotel.price).toFixed(2));
 
     if (newHotel.email) formData.append('email', newHotel.email);
     if (newHotel.phone) formData.append('phone', newHotel.phone);
     if (newHotel.image) formData.append('image', newHotel.image);
 
     try {
-      await axios.post("https://mon-projet-django-b8xs.onrender.com/api/hotels/", formData, {
+      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/api/hotels/", formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         }
       });
+      console.log("✅ Hôtel créé:", response.data); // ✅ Voir la réponse
       setShowModal(false);
       setNewHotel({ name: '', address: '', email: '', phone: '', price: '', image: null });
       fetchHotels();
     } catch (err) {
-      console.error("Erreur complète:", err.response?.data);
-      alert(JSON.stringify(err.response?.data, null, 2)); // ✅ affiche l'erreur exacte
+      console.error("❌ Erreur complète:", err.response?.data);
+      alert(JSON.stringify(err.response?.data, null, 2));
       if (err.response?.status === 401) {
         localStorage.removeItem('access_token');
         navigate('/login');
@@ -67,6 +69,30 @@ const HotelsList = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ Fonction pour gérer l'URL de l'image Cloudinary
+  const getImageUrl = (imageData) => {
+    if (!imageData) {
+      return "https://via.placeholder.com/400x300?text=Pas+d'image";
+    }
+    
+    // Si c'est déjà une URL complète (commence par http)
+    if (typeof imageData === 'string' && imageData.startsWith('http')) {
+      return imageData;
+    }
+    
+    // Si c'est un objet Cloudinary avec url
+    if (typeof imageData === 'object' && imageData.url) {
+      return imageData.url;
+    }
+    
+    // Si c'est juste le chemin relatif
+    if (typeof imageData === 'string') {
+      return `https://mon-projet-django-b8xs.onrender.com${imageData}`;
+    }
+    
+    return "https://via.placeholder.com/400x300?text=Format+invalide";
   };
 
   return (
@@ -89,23 +115,27 @@ const HotelsList = () => {
         {hotels.map((h) => (
           <div key={h.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 group">
              <div className="relative">
+                {/* ✅ CORRECTION ICI */}
                 <img 
-  src={h.image || "https://via.placeholder.com/400x300?text=Pas+d'image"} 
-  className="w-full h-40 object-cover" 
-  alt={h.name}
-  onError={(e) => {
-    console.log("Erreur image pour:", h.name, "URL:", h.image);
-    e.target.src = "https://via.placeholder.com/400x300?text=Erreur";
-  }}
-/>
-                <button onClick={() => {/* Logique delete */}} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition">
+                  src={getImageUrl(h.image)} 
+                  className="w-full h-40 object-cover" 
+                  alt={h.name}
+                  onError={(e) => {
+                    console.log("❌ Erreur de chargement pour:", h.name, "URL:", h.image);
+                    e.target.src = "https://via.placeholder.com/400x300?text=Erreur+de+chargement";
+                  }}
+                />
+                <button 
+                  onClick={() => {/* TODO: Logique delete */}} 
+                  className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition"
+                >
                   <Trash size={14} />
                 </button>
              </div>
              <div className="p-4">
-                <p className="text-[10px] text-yellow-600 font-bold uppercase">{h.address}</p> {/* ✅ correction */}
+                <p className="text-[10px] text-yellow-600 font-bold uppercase">{h.address}</p>
                 <h3 className="font-bold text-gray-800 text-sm truncate">{h.name}</h3>
-                <p className="text-xs text-gray-500">{h.price} XOF / nuit</p> {/* ✅ correction */}
+                <p className="text-xs text-gray-500">{h.price} XOF / nuit</p>
              </div>
           </div>
         ))}
@@ -126,58 +156,81 @@ const HotelsList = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500">Nom de l'hôtel</label>
-                  <input type="text" required className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
-                    value={newHotel.name} onChange={(e) => setNewHotel({...newHotel, name: e.target.value})} />
+                  <input 
+                    type="text" 
+                    required 
+                    className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
+                    value={newHotel.name} 
+                    onChange={(e) => setNewHotel({...newHotel, name: e.target.value})} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500">Adresse</label>
-                  <input type="text" required className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
-                    value={newHotel.address} onChange={(e) => setNewHotel({...newHotel, address: e.target.value})} />
+                  <input 
+                    type="text" 
+                    required 
+                    className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
+                    value={newHotel.address} 
+                    onChange={(e) => setNewHotel({...newHotel, address: e.target.value})} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500">E-mail (optionnel)</label>
-                  <input type="email" className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
-                    value={newHotel.email} onChange={(e) => setNewHotel({...newHotel, email: e.target.value})} />
+                  <input 
+                    type="email" 
+                    className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
+                    value={newHotel.email} 
+                    onChange={(e) => setNewHotel({...newHotel, email: e.target.value})} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500">Numéro de téléphone (optionnel)</label>
-                  <input type="text" className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
-                    value={newHotel.phone} onChange={(e) => setNewHotel({...newHotel, phone: e.target.value})} />
+                  <input 
+                    type="text" 
+                    className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
+                    value={newHotel.phone} 
+                    onChange={(e) => setNewHotel({...newHotel, phone: e.target.value})} 
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-gray-500">Prix par nuit</label>
-                  <input type="number" required className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
-                    value={newHotel.price} onChange={(e) => setNewHotel({...newHotel, price: e.target.value})} />
+                  <input 
+                    type="number" 
+                    required 
+                    className="w-full border border-gray-300 rounded-xl p-2.5 text-sm outline-none focus:border-gray-500"
+                    value={newHotel.price} 
+                    onChange={(e) => setNewHotel({...newHotel, price: e.target.value})} 
+                  />
                 </div>
               </div>
 
-              {/* ... fin des inputs ... */}
-<div className="mt-6 space-y-1">
-  <label className="text-xs font-medium text-gray-500">Ajouter une photo (optionnel)</label>
-  <div className="relative border-2 border-dashed border-gray-200 rounded-xl h-40 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 cursor-pointer">
-    <input 
-      type="file" 
-      accept="image/*" 
-      className="absolute inset-0 opacity-0 cursor-pointer" 
-      onChange={(e) => setNewHotel({...newHotel, image: e.target.files[0]})} 
-    />
-    <ImageIcon size={32} strokeWidth={1} />
-    <span className="text-sm mt-2">{newHotel.image ? newHotel.image.name : "Ajouter une photo"}</span>
-  </div>
-</div>
+              <div className="mt-6 space-y-1">
+                <label className="text-xs font-medium text-gray-500">Ajouter une photo (optionnel)</label>
+                <div className="relative border-2 border-dashed border-gray-200 rounded-xl h-40 flex flex-col items-center justify-center text-gray-400 hover:bg-gray-50 cursor-pointer">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="absolute inset-0 opacity-0 cursor-pointer" 
+                    onChange={(e) => setNewHotel({...newHotel, image: e.target.files[0]})} 
+                  />
+                  <ImageIcon size={32} strokeWidth={1} />
+                  <span className="text-sm mt-2">
+                    {newHotel.image ? newHotel.image.name : "Ajouter une photo"}
+                  </span>
+                </div>
+              </div>
 
-{/* BOUTON ALIGNÉ À DROITE */}
-<div className="mt-8 flex justify-end">
-  <button 
-    type="submit" 
-    disabled={loading}
-    className={`bg-[#4a4d50] text-white px-10 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-      loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black"
-    }`}
-  >
-    {loading ? "Chargement..." : "Enregistrer"}
-  </button>
-</div>
+              <div className="mt-8 flex justify-end">
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className={`bg-[#4a4d50] text-white px-10 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+                    loading ? "opacity-50 cursor-not-allowed" : "hover:bg-black"
+                  }`}
+                >
+                  {loading ? "Chargement..." : "Enregistrer"}
+                </button>
+              </div>
             </form>
           </div>
         </div>
