@@ -13,7 +13,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
    try {
-  const response = await axios.post("http://127.0.0.1:8000/api/register/", formData);
+  const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/api/register/", formData);
   alert("Inscription réussie !");
   navigate("/");
 } catch (err) {

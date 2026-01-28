@@ -15,7 +15,7 @@ const Login = () => {
 
     try {
       // Appel à ton API Django (Assure-toi que ton serveur tourne sur le port 8000)
-     const response = await axios.post("http://127.0.0.1:8000/api/token/", {
+     const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/api/token/", {
   email: identifier, // ✅ envoie bien l'email
   password: password,
 });

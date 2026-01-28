@@ -14,7 +14,7 @@ const handleSubmit = async (e) => {
   if (imageFile) data.append("image", imageFile);
 
   try {
-    await axios.post("http://127.0.0.1:8000/api/hotels/", data, {
+    await axios.post("https://mon-projet-django-b8xs.onrender.com/api/hotels/", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

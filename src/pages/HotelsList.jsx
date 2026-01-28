@@ -48,7 +48,7 @@ const HotelsList = () => {
     if (newHotel.image) formData.append('image', newHotel.image);
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/hotels/", formData, {
+      await axios.post("https://mon-projet-django-b8xs.onrender.com/api/hotels/", formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
