@@ -89,7 +89,15 @@ const HotelsList = () => {
         {hotels.map((h) => (
           <div key={h.id} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 group">
              <div className="relative">
-                <img src={h.image || "placeholder.png"} className="w-full h-40 object-cover" alt={h.name} />
+                <img 
+  src={h.image || "https://via.placeholder.com/400x300?text=Pas+d'image"} 
+  className="w-full h-40 object-cover" 
+  alt={h.name}
+  onError={(e) => {
+    console.log("Erreur image pour:", h.name, "URL:", h.image);
+    e.target.src = "https://via.placeholder.com/400x300?text=Erreur";
+  }}
+/>
                 <button onClick={() => {/* Logique delete */}} className="absolute top-2 right-2 p-1.5 bg-white/90 rounded-full text-red-500 opacity-0 group-hover:opacity-100 transition">
                   <Trash size={14} />
                 </button>
