@@ -22,7 +22,7 @@ const HotelsList = () => {
   const fetchHotels = async () => {
     const token = localStorage.getItem('access_token');
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/hotels/", {
+      const response = await axios.get("https://mon-projet-django-b8xs.onrender.com/api/hotels/", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setHotels(response.data);

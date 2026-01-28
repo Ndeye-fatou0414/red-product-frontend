@@ -52,7 +52,7 @@ export default function Navbar({ onSearch }) {
     try {
       const token = localStorage.getItem('access_token');
       
-      const response = await axios.patch("http://127.0.0.1:8000/api/user/profile/", formData, {
+      const response = await axios.patch("https://mon-projet-django-b8xs.onrender.com/api/user/profile/", formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
