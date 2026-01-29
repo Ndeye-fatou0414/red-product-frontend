@@ -134,60 +134,117 @@ const HotelsList = () => {
 
       {/* ================= MODAL ================= */}
      {showModal && (
-  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl w-full max-w-2xl">
-      <div className="px-6 py-4 border-b flex items-center gap-4">
-        <button onClick={() => setShowModal(false)}>
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl">
+      {/* Header */}
+      <div className="px-8 py-6 border-b border-dashed flex items-center gap-4">
+        <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-black">
           <ArrowLeft size={20} />
         </button>
-        <h2 className="text-sm font-bold uppercase">Créer un hôtel</h2>
+        <h2 className="text-lg font-semibold text-gray-700 uppercase tracking-wide">
+          Créer un nouveau hôtel
+        </h2>
       </div>
 
-      {/* Correction : handleAddHotel au lieu de handleSubmit */}
-      <form onSubmit={handleAddHotel} className="p-8 space-y-4 flex flex-col">
-        <input
-          className="border p-2 rounded"
-          placeholder="Nom"
-          required
-          value={newHotel.name} // Correction : newHotel au lieu de formData
-          onChange={(e) => setNewHotel({ ...newHotel, name: e.target.value })}
-        />
-        <input
-          className="border p-2 rounded"
-          placeholder="Adresse"
-          required
-          value={newHotel.address}
-          onChange={(e) => setNewHotel({ ...newHotel, address: e.target.value })}
-        />
-        <input
-          className="border p-2 rounded"
-          placeholder="Prix"
-          type="number"
-          required
-          value={newHotel.price}
-          onChange={(e) => setNewHotel({ ...newHotel, price: e.target.value })}
-        />
-        <input
-          className="border p-2 rounded"
-          placeholder="E-mail (optionnel)"
-          type="email"
-          value={newHotel.email}
-          onChange={(e) => setNewHotel({ ...newHotel, email: e.target.value })}
-        />
-        <input
-          className="border p-2 rounded"
-          placeholder="Téléphone (optionnel)"
-          value={newHotel.phone}
-          onChange={(e) => setNewHotel({ ...newHotel, phone: e.target.value })}
-        />
+      {/* Formulaire */}
+      <form onSubmit={handleAddHotel} className="p-8 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Nom */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Nom de l'hôtel</label>
+            <input
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="CAP Mamiane"
+              required
+              value={newHotel.name}
+              onChange={(e) => setNewHotel({ ...newHotel, name: e.target.value })}
+            />
+          </div>
 
-        <button
-          disabled={loading}
-          type="submit"
-          className="bg-black text-white px-6 py-2 rounded disabled:bg-gray-400"
-        >
-          {loading ? "Chargement..." : "Enregistrer"}
-        </button>
+          {/* Adresse */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Adresse</label>
+            <input
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="Les îles du saloum, Mar Lodj"
+              required
+              value={newHotel.address}
+              onChange={(e) => setNewHotel({ ...newHotel, address: e.target.value })}
+            />
+          </div>
+
+          {/* E-mail */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">E-mail</label>
+            <input
+              type="email"
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="information@gmail.com"
+              value={newHotel.email}
+              onChange={(e) => setNewHotel({ ...newHotel, email: e.target.value })}
+            />
+          </div>
+
+          {/* Téléphone */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Numéro de téléphone</label>
+            <input
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="+221 77 777 77 77"
+              value={newHotel.phone}
+              onChange={(e) => setNewHotel({ ...newHotel, phone: e.target.value })}
+            />
+          </div>
+
+          {/* Prix */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Prix par nuit</label>
+            <input
+              type="number"
+              className="w-full border border-gray-200 rounded-lg p-3 text-sm focus:ring-1 focus:ring-blue-500 outline-none"
+              placeholder="25.000 XOF"
+              required
+              value={newHotel.price}
+              onChange={(e) => setNewHotel({ ...newHotel, price: e.target.value })}
+            />
+          </div>
+
+          {/* Devise (Statique comme sur l'image) */}
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-gray-600">Devise</label>
+            <select className="w-full border border-gray-200 rounded-lg p-3 text-sm bg-white outline-none">
+              <option>F XOF</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Zone Image */}
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-600">Ajouter une photo</label>
+          <div className="border-2 border-dashed border-gray-200 rounded-xl h-48 flex flex-col items-center justify-center relative hover:bg-gray-50 transition-colors">
+            <input 
+              type="file" 
+              className="absolute inset-0 opacity-0 cursor-pointer" 
+              onChange={(e) => setNewHotel({...newHotel, image: e.target.files[0]})}
+            />
+            <ImageIcon className="text-gray-300 mb-2" size={48} />
+            <span className="text-gray-400 text-sm">Ajouter une photo</span>
+            {newHotel.image && (
+                <span className="mt-2 text-xs text-green-600 font-medium">{newHotel.image.name}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end pt-4">
+          <button
+            disabled={loading}
+            type="submit"
+            className="bg-[#555555] hover:bg-[#444444] text-white px-10 py-3 rounded-xl font-medium transition-all shadow-sm disabled:opacity-50"
+          >
+            {loading ? "Chargement..." : "Enregistrer"}
+          </button>
+        </div>
       </form>
     </div>
   </div>
