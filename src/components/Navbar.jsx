@@ -8,7 +8,7 @@ export default function Navbar({ onSearch }) {
   const fileInputRef = useRef(null);
   
   // État pour la photo (par défaut image pravatar)
-  // const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/40");
+  const [profileImage, setProfileImage] = useState("https://i.pravatar.cc/40");
 
   // 1. Charger la photo actuelle depuis le backend au montage du composant
   useEffect(() => {
