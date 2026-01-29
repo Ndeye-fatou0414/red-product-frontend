@@ -133,49 +133,64 @@ const HotelsList = () => {
       </div>
 
       {/* ================= MODAL ================= */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white rounded-xl w-full max-w-2xl">
-            <div className="px-6 py-4 border-b flex items-center gap-4">
-              <button onClick={() => setShowModal(false)}>
-                <ArrowLeft size={20} />
-              </button>
-              <h2 className="text-sm font-bold uppercase">
-                Créer un hôtel
-              </h2>
-            </div>
+     {showModal && (
+  <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+    <div className="bg-white rounded-xl w-full max-w-2xl">
+      <div className="px-6 py-4 border-b flex items-center gap-4">
+        <button onClick={() => setShowModal(false)}>
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="text-sm font-bold uppercase">
+          Créer un hôtel
+        </h2>
+      </div>
 
-            <form onSubmit={handleAddHotel} className="p-8 space-y-4">
-              <input
-                placeholder="Nom"
-                required
-                value={newHotel.name}
-                onChange={e => setNewHotel({ ...newHotel, name: e.target.value })}
-              />
-              <input
-                placeholder="Adresse"
-                required
-                value={newHotel.address}
-                onChange={e => setNewHotel({ ...newHotel, address: e.target.value })}
-              />
-              <input
-                placeholder="Prix"
-                type="number"
-                required
-                value={newHotel.price}
-                onChange={e => setNewHotel({ ...newHotel, price: e.target.value })}
-              />
-              <button
-                disabled={loading}
-                type="submit"
-                className="bg-black text-white px-6 py-2 rounded"
-              >
-                {loading ? "Chargement..." : "Enregistrer"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      <form onSubmit={handleSubmit} className="p-8 space-y-4">
+        <input
+          placeholder="Nom"
+          required
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+        />
+        <input
+          placeholder="Adresse"
+          required
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+        />
+        <input
+          placeholder="Prix"
+          type="number"
+          required
+          value={formData.price}
+          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+        />
+        <input
+          placeholder="E-mail (optionnel)"
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+        />
+        <input
+          placeholder="Téléphone (optionnel)"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+        />
+        {/* ❌ Image conservée uniquement côté UI, pas envoyée */}
+        {formData.image && <p className="text-xs text-gray-500">Image sélectionnée : {formData.image.name}</p>}
+
+        <button
+          disabled={loading}
+          type="submit"
+          className="bg-black text-white px-6 py-2 rounded"
+        >
+          {loading ? "Chargement..." : "Enregistrer"}
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+
     </main>
   );
 };
