@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Hotels from "./pages/HotelsList";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Register from "./pages/Register";
+import Activation from "./components/Activation";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<MotDePasseOublie />} />
+      <Route path="/activate/:uid/:token" element={<Activation />} />
 
       {/* --- 3. Pages protégées (Dashboard) --- */}
       <Route 
