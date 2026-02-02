@@ -11,26 +11,38 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // URL dynamique : Utilise Render par défaut, mais permet le localhost pour tes tests
+  const API_URL = "https://mon-projet-django-b8xs.onrender.com";
+
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // 🚀 NOUVELLE URL DJOSER : /auth/users/
-      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/auth/users/", {
+      // Envoi des données à Djoser
+      const response = await axios.post(`${API_URL}/auth/users/`, {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        re_password: formData.password, // 🔑 Requis car USER_CREATE_PASSWORD_RETYPE est True
+        re_password: formData.password, // Obligatoire avec ta config DJOSER
       });
 
-      alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
-      navigate("/"); // Redirection vers le login
+      alert("Inscription réussie ! Un email d'activation vous a été envoyé. Veuillez vérifier votre boîte de réception.");
+      navigate("/"); // Retour au login
     } catch (err) {
-      console.error("Erreur Inscription:", err.response?.data);
-      // On affiche l'erreur spécifique (ex: email déjà pris, mot de passe trop court)
-      const errorMsg = JSON.stringify(err.response?.data) || "Erreur lors de l'inscription";
-      alert(errorMsg);
+      console.error("Erreur détaillée:", err.response?.data);
+      
+      // Extraction d'un message d'erreur lisible
+      const errorData = err.response?.data;
+      let message = "Erreur lors de l'inscription";
+
+      if (errorData) {
+        if (errorData.email) message = `Email: ${errorData.email[0]}`;
+        else if (errorData.username) message = `Utilisateur: ${errorData.username[0]}`;
+        else if (errorData.password) message = `Mot de passe: ${errorData.password[0]}`;
+      }
+      
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -51,7 +63,7 @@ const Register = () => {
       </div>
 
       <div className="w-[90%] max-w-[380px] bg-white rounded-md shadow-2xl p-7 z-10">
-        <p className="text-gray-700 text-sm mb-6 font-medium text-center md:text-left">Inscrivez-vous en tant que Admin</p>
+        <p className="text-gray-700 text-sm mb-6 font-medium text-center md:text-left">Inscrivez-vous en tant qu'Admin</p>
 
         <form onSubmit={handleRegister} className="flex flex-col">
           <div className="mb-5 border-b border-gray-200">
@@ -100,10 +112,10 @@ const Register = () => {
             type="submit"
             disabled={loading}
             className={`w-full bg-[#4a4d50] text-white py-3 rounded-md font-medium text-sm transition-all ${
-              loading ? "opacity-50" : "hover:bg-[#3f4245]"
+              loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#3f4245]"
             }`}
           >
-            {loading ? "Chargement..." : "S'inscrire"}
+            {loading ? "Traitement..." : "S'inscrire"}
           </button>
         </form>
       </div>
