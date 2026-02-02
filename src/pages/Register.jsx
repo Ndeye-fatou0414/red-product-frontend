@@ -8,32 +8,41 @@ const Register = () => {
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-   try {
-  const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/api/register/", formData);
-  alert("Inscription réussie !");
-  navigate("/");
-} catch (err) {
-  console.log("STATUS:", err.response?.status);
-  console.log("DATA:", err.response?.data);
-  alert(JSON.stringify(err.response?.data, null, 2)); // ✅ affiche les erreurs exactes du backend
-}
-};
+    setLoading(true);
+    
+    try {
+      // 🚀 NOUVELLE URL DJOSER : /auth/users/
+      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/auth/users/", {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        re_password: formData.password, // 🔑 Requis car USER_CREATE_PASSWORD_RETYPE est True
+      });
 
+      alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
+      navigate("/"); // Redirection vers le login
+    } catch (err) {
+      console.error("Erreur Inscription:", err.response?.data);
+      // On affiche l'erreur spécifique (ex: email déjà pris, mot de passe trop court)
+      const errorMsg = JSON.stringify(err.response?.data) || "Erreur lors de l'inscription";
+      alert(errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="h-screen w-full flex flex-col items-center justify-center bg-[#313538] font-sans overflow-hidden relative">
-      
-      {/* Motif de fond constant */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[-5%] left-[-10%] w-[400px] h-[400px] rounded-full border-[40px] border-white/5"></div>
         <div className="absolute bottom-[-5%] right-[-10%] w-[500px] h-[500px] rounded-full border-[50px] border-white/5"></div>
       </div>
 
-      {/* Header Logo RED PRODUCT */}
       <div className="flex items-center gap-2 mb-5 z-10">
         <div className="w-5 h-5 bg-white flex items-center justify-center rounded-sm">
            <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[9px] border-b-[#313538]"></div>
@@ -41,7 +50,6 @@ const Register = () => {
         <span className="text-white font-bold text-lg tracking-widest uppercase">Red Product</span>
       </div>
 
-      {/* Carte d'inscription - Compacte pour éviter le scroll */}
       <div className="w-[90%] max-w-[380px] bg-white rounded-md shadow-2xl p-7 z-10">
         <p className="text-gray-700 text-sm mb-6 font-medium text-center md:text-left">Inscrivez-vous en tant que Admin</p>
 
@@ -76,7 +84,6 @@ const Register = () => {
             />
           </div>
 
-          {/* Checkbox Conditions (Figma) */}
           <div className="flex items-center gap-2 mb-6">
             <input 
               type="checkbox" 
@@ -91,14 +98,16 @@ const Register = () => {
 
           <button
             type="submit"
-            className="w-full bg-[#4a4d50] text-white py-3 rounded-md font-medium text-sm hover:bg-[#3f4245] transition-all"
+            disabled={loading}
+            className={`w-full bg-[#4a4d50] text-white py-3 rounded-md font-medium text-sm transition-all ${
+              loading ? "opacity-50" : "hover:bg-[#3f4245]"
+            }`}
           >
-            S'inscrire
+            {loading ? "Chargement..." : "S'inscrire"}
           </button>
         </form>
       </div>
 
-      {/* Retour au Login */}
       <div className="mt-5 text-center z-10">
         <p className="text-white text-xs">
           Vous avez déjà un compte ?{" "}

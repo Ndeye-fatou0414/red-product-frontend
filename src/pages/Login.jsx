@@ -15,13 +15,13 @@ const Login = () => {
     setError('');
 
     try {
-      // ✅ Envoi de l'email et password à ton API sur Render
-      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/api/token/", {
-        email: identifier.trim(), // On retire les espaces inutiles
+      // 🚀 NOUVELLE URL AVEC DJOSER
+      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/auth/jwt/create/", {
+        email: identifier.trim(), 
         password: password,
       });
 
-      // ✅ Stockage des tokens (Indispensable pour Supprimer/Modifier)
+      // ✅ Djoser (JWT) renvoie 'access' et 'refresh'
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
 
@@ -30,7 +30,7 @@ const Login = () => {
     } catch (err) {
       console.error("Erreur de connexion:", err.response);
       
-      // Récupération du message d'erreur précis du backend
+      // Djoser renvoie les erreurs dans err.response.data
       const serverError = err.response?.data?.detail || 
                           err.response?.data?.non_field_errors?.[0] || 
                           "Email ou mot de passe incorrect.";
@@ -58,7 +58,6 @@ const Login = () => {
       <div className="w-[90%] max-w-[380px] bg-white rounded-md shadow-2xl p-8 z-10">
         <p className="text-gray-700 text-sm mb-6">Connectez-vous avec votre e-mail</p>
 
-        {/* Affichage de l'erreur si elle existe */}
         {error && (
           <div className="mb-4 p-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded">
             {error}
