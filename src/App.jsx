@@ -38,7 +38,6 @@ function App() {
 
       {/* Rediriger tout le reste vers login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
-      
     </Routes>
   );
 }
