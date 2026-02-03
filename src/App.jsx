@@ -34,10 +34,13 @@ function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="hotels" element={<Hotels />} />
+        // Dans ton fichier de routes principal
+       <Route path="/activate/:uid/:token" element={<Activation />} />
       </Route>
 
       {/* Rediriger tout le reste vers login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
+      
     </Routes>
   );
 }
