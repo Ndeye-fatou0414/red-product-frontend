@@ -1,36 +1,50 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
+    username: "",
+    email: "",
+    password: "",
   });
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    try {
-      // 🚀 NOUVELLE URL DJOSER : /auth/users/
-      const response = await axios.post("https://mon-projet-django-b8xs.onrender.com/auth/users/", {
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        re_password: formData.password, // 🔑 Requis car USER_CREATE_PASSWORD_RETYPE est True
-      });
 
-      alert("Inscription réussie ! Vous pouvez maintenant vous connecter.");
-      navigate("/"); // Redirection vers le login
+    try {
+      await axios.post(
+        "https://mon-projet-django-b8xs.onrender.com/auth/users/",
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          re_password: formData.password,
+        }
+      );
+
+      alert(
+        "Inscription réussie 🎉\n\nUn email d’activation vient de vous être envoyé.\nVeuillez vérifier votre boîte mail pour activer votre compte."
+      );
+
+      // 👉 On redirige vers le login, MAIS le compte reste inactif
+      navigate("/login");
     } catch (err) {
-      console.error("Erreur Inscription:", err.response?.data);
-      // On affiche l'erreur spécifique (ex: email déjà pris, mot de passe trop court)
-      const errorMsg = JSON.stringify(err.response?.data) || "Erreur lors de l'inscription";
-      alert(errorMsg);
+      console.error("Erreur inscription :", err.response?.data);
+
+      let message = "Erreur lors de l’inscription";
+
+      if (err.response?.data) {
+        message = Object.values(err.response.data)
+          .flat()
+          .join("\n");
+      }
+
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -45,13 +59,17 @@ const Register = () => {
 
       <div className="flex items-center gap-2 mb-5 z-10">
         <div className="w-5 h-5 bg-white flex items-center justify-center rounded-sm">
-           <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[9px] border-b-[#313538]"></div>
+          <div className="w-0 h-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[9px] border-b-[#313538]"></div>
         </div>
-        <span className="text-white font-bold text-lg tracking-widest uppercase">Red Product</span>
+        <span className="text-white font-bold text-lg tracking-widest uppercase">
+          Red Product
+        </span>
       </div>
 
       <div className="w-[90%] max-w-[380px] bg-white rounded-md shadow-2xl p-7 z-10">
-        <p className="text-gray-700 text-sm mb-6 font-medium text-center md:text-left">Inscrivez-vous en tant que Admin</p>
+        <p className="text-gray-700 text-sm mb-6 font-medium text-center md:text-left">
+          Inscription administrateur
+        </p>
 
         <form onSubmit={handleRegister} className="flex flex-col">
           <div className="mb-5 border-b border-gray-200">
@@ -59,7 +77,9 @@ const Register = () => {
               type="text"
               placeholder="Nom d'utilisateur"
               className="w-full py-2 focus:outline-none text-gray-800 placeholder-gray-400 text-sm"
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
               required
             />
           </div>
@@ -69,7 +89,9 @@ const Register = () => {
               type="email"
               placeholder="E-mail"
               className="w-full py-2 focus:outline-none text-gray-800 placeholder-gray-400 text-sm"
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, email: e.target.value })
+              }
               required
             />
           </div>
@@ -79,17 +101,19 @@ const Register = () => {
               type="password"
               placeholder="Mot de passe"
               className="w-full py-2 focus:outline-none text-gray-800 placeholder-gray-400 text-sm"
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
               required
             />
           </div>
 
           <div className="flex items-center gap-2 mb-6">
-            <input 
-              type="checkbox" 
-              id="terms" 
+            <input
+              type="checkbox"
+              id="terms"
               required
-              className="w-4 h-4 accent-[#4a4d50] cursor-pointer" 
+              className="w-4 h-4 accent-[#4a4d50] cursor-pointer"
             />
             <label htmlFor="terms" className="text-gray-600 text-xs cursor-pointer">
               Accepter les termes et conditions
@@ -111,7 +135,7 @@ const Register = () => {
       <div className="mt-5 text-center z-10">
         <p className="text-white text-xs">
           Vous avez déjà un compte ?{" "}
-          <Link to="/" className="text-[#FFD700] font-bold hover:underline">
+          <Link to="/login" className="text-[#FFD700] font-bold hover:underline">
             Connectez-vous
           </Link>
         </p>
